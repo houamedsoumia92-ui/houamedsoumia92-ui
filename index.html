@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اسمك — مطوّرة برمجيات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F3ED;
+    --ink:#20232C;
+    --muted:#6B675F;
+    --teal:#1F6F5C;
+    --navy:#232842;
+    --line:#D8D3C6;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Cairo', sans-serif;
+    line-height:1.6;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  /* ===== شريط علوي بسيط ===== */
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:24px 8vw;
+    border-bottom:1px solid var(--line);
+  }
+  header .logo{ font-weight:800; font-size:1.1rem; }
+  header nav a{
+    color:var(--ink);
+    text-decoration:none;
+    margin-inline-start:28px;
+    font-size:.95rem;
+    opacity:.8;
+  }
+  header nav a:hover{ opacity:1; color:var(--teal); }
+
+  /* ===== قسم البداية (Hero) ===== */
+  .hero{
+    padding:14vh 8vw 10vh;
+    max-width:900px;
+  }
+  .hero .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--teal);
+    font-size:.9rem;
+    margin-bottom:18px;
+    display:block;
+  }
+  .hero h1{
+    font-size:clamp(2.2rem, 6vw, 4rem);
+    font-weight:800;
+    line-height:1.15;
+    margin-bottom:20px;
+  }
+  .hero p.tagline{
+    font-size:1.15rem;
+    color:var(--muted);
+    max-width:600px;
+    margin-bottom:36px;
+  }
+
+  /* صندوق يشبه الطرفية (terminal) — العنصر المميز في التصميم */
+  .terminal{
+    background:var(--navy);
+    color:#E7E6E0;
+    border-radius:10px;
+    padding:22px 26px;
+    max-width:520px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.92rem;
+    box-shadow:0 12px 30px rgba(35,40,66,.18);
+  }
+  .terminal .dots{ margin-bottom:14px; }
+  .terminal .dots span{
+    display:inline-block; width:10px; height:10px; border-radius:50%;
+    margin-inline-end:6px; background:#5a5f78;
+  }
+  .terminal .line{ color:#9AD6C4; }
+  .terminal .key{ color:#E7C77B; }
+  .terminal .str{ color:#E7E6E0; }
+  #typed::after{
+    content:'▍';
+    animation: blink 1s step-end infinite;
+    color:#9AD6C4;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* ===== تسميات الأقسام على شكل تعليق برمجي ===== */
+  section{ padding:8vh 8vw; max-width:1100px; }
+  .section-label{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--teal);
+    font-size:.95rem;
+    margin-bottom:10px;
+  }
+  section h2{ font-size:1.9rem; font-weight:800; margin-bottom:36px; }
+
+  /* ===== شبكة المشاريع ===== */
+  .projects-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+    gap:26px;
+  }
+  .project-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:26px;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .project-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 28px rgba(32,35,44,.08);
+  }
+  .project-card .tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.78rem;
+    color:var(--teal);
+    background:rgba(31,111,92,.08);
+    padding:3px 10px;
+    border-radius:20px;
+    display:inline-block;
+    margin-bottom:14px;
+  }
+  .project-card h3{ font-size:1.15rem; margin-bottom:10px; }
+  .project-card p{ color:var(--muted); font-size:.95rem; margin-bottom:16px; }
+  .project-card a{
+    color:var(--ink);
+    font-family:'JetBrains Mono', monospace;
+    font-size:.85rem;
+    text-decoration:none;
+    border-bottom:1px solid var(--ink);
+  }
+
+  /* ===== قسم عني ===== */
+  .about-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:50px;
+    align-items:start;
+  }
+  .about-grid p{ color:var(--muted); margin-bottom:16px; }
+  .skills-list{ list-style:none; }
+  .skills-list li{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.9rem;
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+  }
+  .skills-list li span:last-child{ color:var(--muted); }
+
+  /* ===== تواصل ===== */
+  .contact-box{
+    background:var(--navy);
+    color:#fff;
+    border-radius:16px;
+    padding:60px 8vw;
+    margin:0 8vw 10vh;
+    text-align:center;
+  }
+  .contact-box h2{ margin-bottom:16px; }
+  .contact-box p{ color:#C7C9D6; margin-bottom:28px; }
+  .contact-box a.cta{
+    background:var(--teal);
+    color:#fff;
+    padding:14px 30px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:600;
+    display:inline-block;
+  }
+
+  footer{
+    text-align:center;
+    padding:30px;
+    color:var(--muted);
+    font-size:.85rem;
+  }
+
+  @media (max-width:720px){
+    .about-grid{ grid-template-columns:1fr; }
+    header nav a{ margin-inline-start:14px; font-size:.85rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #typed::after{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo mono">Soumia.dev</div>
+  <nav>
+    <a href="#projects">المشاريع</a>
+    <a href="#about">عني</a>
+    <a href="#contact">تواصل</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <span class="eyebrow">// مرحبًا، أنا مطوّرة</span>
+  <h1>Houamed Soumia</h1>
+  <p class="tagline">مطوّرة برمجيات أبني حلولًا رقمية بسيطة وفعّالة — من فكرة على الورق إلى تطبيق يعمل فعليًا.</p>
+
+  <div class="terminal">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="line">const <span class="key">skills</span> = [</div>
+    <div style="padding-inline-start:20px" class="str"><span id="typed"></span></div>
+    <div class="line">];</div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-label">// المشاريع</div>
+  <h2>أعمال قمت بها</h2>
+  <div class="projects-grid">
+
+    <div class="project-card">
+      <span class="tag">HTML · CSS · JS</span>
+      <h3>حاسبة تفاعلية</h3>
+      <p>حاسبة تقوم بالعمليات الأساسية (+ - × ÷) مع واجهة على شكل طرفية (terminal)، مبنية بجافاسكريبت خالص.</p>
+      <a href="calculator.html" target="_blank">عرض المشروع ↗</a>
+    </div>
+
+    <div class="project-card">
+      <span class="tag">HTML · CSS · JS</span>
+      <h3>منظّم مهام (To-Do List)</h3>
+      <p>تطبيق لإضافة المهام، تعليمها كمنتهية، أو حذفها — يستخدم مصفوفات (arrays) لتخزين وعرض البيانات ديناميكيًا.</p>
+      <a href="todo.html" target="_blank">عرض المشروع ↗</a>
+    </div>
+
+  </div>
+</section>
+
+<section id="about">
+  <div class="section-label">// عني</div>
+  <h2>نبذة</h2>
+  <div class="about-grid">
+    <div>
+      <p>حاصلة على ليسانس في الإعلام الآلي والرياضيات، وأعمل حاليًا على بناء مسار مهني في تطوير البرمجيات. أهتم بحل المشكلات بطريقة منطقية ومنظمة، وأسعى لتحويل الأفكار إلى منتجات رقمية قابلة للاستخدام فعليًا.</p>
+      <p>أبحث حاليًا عن فرص عمل حر أو تعاون في مشاريع تطوير المواقع والتطبيقات.</p>
+    </div>
+    <ul class="skills-list">
+      <li><span>HTML / CSS</span><span>أساسي</span></li>
+      <li><span>JavaScript</span><span>أساسي</span></li>
+      <li><span>Python</span><span>أساسي</span></li>
+      <li><span>الرياضيات التطبيقية</span><span>متقدم</span></li>
+    </ul>
+  </div>
+</section>
+
+<div class="contact-box" id="contact">
+  <h2>لنعمل معًا</h2>
+  <p>هل لديك مشروع أو فكرة تحتاج مطوّرة؟ راسليني.</p>
+  <a class="cta" href="mailto:houamedsoumia92@gmail.com">راسلني الآن</a>
+</div>
+
+<footer>© 2026 Houamed Soumia — تم بناؤه بـ HTML / CSS / JS</footer>
+
+<script>
+  // تأثير الكتابة داخل صندوق الطرفية
+  const skills = ['"Problem Solving"', '"HTML/CSS"', '"JavaScript"', '"Python"'];
+  const el = document.getElementById('typed');
+  let i = 0, j = 0, current = '';
+
+  function type(){
+    if(i < skills.length){
+      if(j < skills[i].length){
+        current += skills[i][j];
+        el.textContent = current + (i < skills.length-1 ? ',' : '');
+        j++;
+        setTimeout(type, 45);
+      } else {
+        current += i < skills.length-1 ? ', ' : '';
+        i++; j=0;
+        setTimeout(type, 300);
+      }
+    }
+  }
+  type();
+</script>
+
+</body>
+</html>

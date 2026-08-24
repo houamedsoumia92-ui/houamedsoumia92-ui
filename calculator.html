@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة بسيطة</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F3ED;
+    --ink:#20232C;
+    --muted:#6B675F;
+    --teal:#1F6F5C;
+    --navy:#232842;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:var(--paper);
+    font-family:'Cairo', sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .calculator{
+    background:var(--navy);
+    border-radius:18px;
+    padding:24px;
+    width:100%;
+    max-width:340px;
+    box-shadow:0 20px 40px rgba(35,40,66,.25);
+  }
+  .screen{
+    background:#1a1e33;
+    border-radius:10px;
+    padding:24px 18px;
+    margin-bottom:18px;
+    text-align:left;
+    direction:ltr;
+  }
+  .screen .prev{
+    color:#8b90ab;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.95rem;
+    min-height:20px;
+  }
+  .screen .current{
+    color:#fff;
+    font-family:'JetBrains Mono', monospace;
+    font-size:2rem;
+    font-weight:700;
+    word-break:break-all;
+  }
+  .buttons{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+  }
+  button{
+    border:none;
+    border-radius:10px;
+    padding:18px 0;
+    font-size:1.1rem;
+    font-family:'JetBrains Mono', monospace;
+    cursor:pointer;
+    background:#2c3153;
+    color:#fff;
+    transition:transform .1s ease, background .15s ease;
+  }
+  button:hover{ background:#3a4066; }
+  button:active{ transform:scale(.95); }
+  button.op{ background:#3a4570; color:#9AD6C4; }
+  button.equal{ background:var(--teal); grid-row:span 2; }
+  button.clear{ background:#7a3b3b; }
+  button.zero{ grid-column:span 2; }
+</style>
+</head>
+<body>
+
+<div class="calculator">
+  <div class="screen">
+    <div class="prev" id="prevOperand"></div>
+    <div class="current" id="currentOperand">0</div>
+  </div>
+
+  <div class="buttons">
+    <button class="clear" data-action="clear">C</button>
+    <button class="op" data-action="delete">⌫</button>
+    <button class="op" data-op="÷">÷</button>
+    <button class="op" data-op="×">×</button>
+
+    <button data-num="7">7</button>
+    <button data-num="8">8</button>
+    <button data-num="9">9</button>
+    <button class="op" data-op="-">-</button>
+
+    <button data-num="4">4</button>
+    <button data-num="5">5</button>
+    <button data-num="6">6</button>
+    <button class="op" data-op="+">+</button>
+
+    <button data-num="1">1</button>
+    <button data-num="2">2</button>
+    <button data-num="3">3</button>
+    <button class="equal" data-action="equals">=</button>
+
+    <button class="zero" data-num="0">0</button>
+    <button data-num=".">.</button>
+  </div>
+</div>
+
+<script>
+  // ===== 1. نلتقط عنصري الشاشة (السطر العلوي والسطر الحالي) =====
+  const currentOperandEl = document.getElementById('currentOperand');
+  const prevOperandEl = document.getElementById('prevOperand');
+
+  // ===== 2. متغيرات نخزن فيها حالة الحاسبة =====
+  let currentOperand = '0';   // الرقم الذي تتم كتابته الآن
+  let prevOperand = '';       // الرقم الأول (قبل اختيار عملية)
+  let operation = undefined;  // العملية المختارة (+ - × ÷)
+
+  // ===== 3. دالة لتحديث ما يظهر على الشاشة =====
+  function updateDisplay(){
+    currentOperandEl.textContent = currentOperand;
+    prevOperandEl.textContent = prevOperand
+      ? `${prevOperand} ${operation || ''}`
+      : '';
+  }
+
+  // ===== 4. عند الضغط على رقم =====
+  function appendNumber(number){
+    // لا تسمحي بأكثر من نقطة عشرية واحدة
+    if(number === '.' && currentOperand.includes('.')) return;
+    // إذا كانت الشاشة تعرض 0 فقط، استبدليها بالرقم الجديد
+    if(currentOperand === '0' && number !== '.'){
+      currentOperand = number;
+    } else {
+      currentOperand += number;
+    }
+  }
+
+  // ===== 5. عند اختيار عملية (+ - × ÷) =====
+  function chooseOperation(op){
+    if(currentOperand === '') return;
+    if(prevOperand !== ''){
+      compute(); // إذا كان هناك عملية سابقة، نحسبها أولاً
+    }
+    operation = op;
+    prevOperand = currentOperand;
+    currentOperand = '';
+  }
+
+  // ===== 6. دالة الحساب الفعلي =====
+  function compute(){
+    let result;
+    const prev = parseFloat(prevOperand);
+    const current = parseFloat(currentOperand);
+    if(isNaN(prev) || isNaN(current)) return;
+
+    switch(operation){
+      case '+': result = prev + current; break;
+      case '-': result = prev - current; break;
+      case '×': result = prev * current; break;
+      case '÷': result = current === 0 ? 'خطأ' : prev / current; break;
+      default: return;
+    }
+    currentOperand = result.toString();
+    operation = undefined;
+    prevOperand = '';
+  }
+
+  // ===== 7. ربط كل الأزرار بالوظائف المناسبة =====
+  document.querySelectorAll('[data-num]').forEach(button => {
+    button.addEventListener('click', () => {
+      appendNumber(button.dataset.num);
+      updateDisplay();
+    });
+  });
+
+  document.querySelectorAll('[data-op]').forEach(button => {
+    button.addEventListener('click', () => {
+      chooseOperation(button.dataset.op);
+      updateDisplay();
+    });
+  });
+
+  document.querySelector('[data-action="equals"]').addEventListener('click', () => {
+    compute();
+    updateDisplay();
+  });
+
+  document.querySelector('[data-action="clear"]').addEventListener('click', () => {
+    currentOperand = '0';
+    prevOperand = '';
+    operation = undefined;
+    updateDisplay();
+  });
+
+  document.querySelector('[data-action="delete"]').addEventListener('click', () => {
+    currentOperand = currentOperand.slice(0, -1) || '0';
+    updateDisplay();
+  });
+</script>
+
+</body>
+</html>

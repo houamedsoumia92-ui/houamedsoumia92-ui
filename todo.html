@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منظّم المهام</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F3ED;
+    --ink:#20232C;
+    --muted:#6B675F;
+    --teal:#1F6F5C;
+    --navy:#232842;
+    --line:#D8D3C6;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:var(--paper);
+    font-family:'Cairo', sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:60px 20px;
+  }
+  .app{
+    width:100%;
+    max-width:480px;
+  }
+  h1{
+    font-size:1.6rem;
+    font-weight:800;
+    margin-bottom:6px;
+  }
+  .subtitle{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--teal);
+    font-size:.9rem;
+    margin-bottom:28px;
+  }
+  .input-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:24px;
+  }
+  .input-row input{
+    flex:1;
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    font-family:'Cairo', sans-serif;
+    font-size:1rem;
+    background:#fff;
+  }
+  .input-row input:focus{ outline:2px solid var(--teal); }
+  .input-row button{
+    background:var(--navy);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:0 22px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:1.3rem;
+    cursor:pointer;
+  }
+  .input-row button:hover{ background:var(--teal); }
+
+  ul#taskList{ list-style:none; }
+  .task{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .task .check{
+    width:20px; height:20px;
+    border:2px solid var(--teal);
+    border-radius:50%;
+    cursor:pointer;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    font-size:.75rem;
+  }
+  .task.done .check{ background:var(--teal); }
+  .task .text{ flex:1; }
+  .task.done .text{
+    text-decoration:line-through;
+    color:var(--muted);
+  }
+  .task .delete{
+    background:none;
+    border:none;
+    color:#a35a5a;
+    cursor:pointer;
+    font-size:1rem;
+  }
+  .empty-msg{
+    color:var(--muted);
+    font-family:'JetBrains Mono', monospace;
+    font-size:.9rem;
+    text-align:center;
+    padding:30px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <h1>مهامي اليوم</h1>
+  <span class="subtitle">// أضيفي مهمة واضغطي Enter أو +</span>
+
+  <div class="input-row">
+    <input type="text" id="taskInput" placeholder="اكتبي مهمة جديدة...">
+    <button id="addBtn">+</button>
+  </div>
+
+  <ul id="taskList"></ul>
+</div>
+
+<script>
+  // ===== 1. نلتقط العناصر التي سنتعامل معها =====
+  const input = document.getElementById('taskInput');
+  const addBtn = document.getElementById('addBtn');
+  const taskList = document.getElementById('taskList');
+
+  // ===== 2. مصفوفة (array) تخزّن كل المهام في الذاكرة =====
+  // كل مهمة هي object فيه: النص، وهل هي منتهية أم لا
+  let tasks = [];
+
+  // ===== 3. دالة تعيد رسم القائمة كاملة من جديد في كل مرة =====
+  function render(){
+    taskList.innerHTML = ''; // نمسح القائمة القديمة
+
+    if(tasks.length === 0){
+      taskList.innerHTML = '<p class="empty-msg">لا توجد مهام حاليًا 🌿</p>';
+      return;
+    }
+
+    tasks.forEach((task, index) => {
+      const li = document.createElement('li');
+      li.className = 'task' + (task.done ? ' done' : '');
+
+      li.innerHTML = `
+        <span class="check">${task.done ? '✓' : ''}</span>
+        <span class="text">${task.text}</span>
+        <button class="delete">✕</button>
+      `;
+
+      // عند الضغط على الدائرة: نبدّل حالة المهمة (منتهية / غير منتهية)
+      li.querySelector('.check').addEventListener('click', () => {
+        tasks[index].done = !tasks[index].done;
+        render();
+      });
+
+      // عند الضغط على "✕": نحذف المهمة من المصفوفة
+      li.querySelector('.delete').addEventListener('click', () => {
+        tasks.splice(index, 1);
+        render();
+      });
+
+      taskList.appendChild(li);
+    });
+  }
+
+  // ===== 4. دالة إضافة مهمة جديدة =====
+  function addTask(){
+    const text = input.value.trim();
+    if(text === '') return; // لا نضيف مهمة فارغة
+
+    tasks.push({ text: text, done: false });
+    input.value = '';
+    render();
+  }
+
+  // ===== 5. ربط الزر وحقل الكتابة بالحدث المناسب =====
+  addBtn.addEventListener('click', addTask);
+
+  input.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') addTask();
+  });
+
+  // ===== 6. رسم القائمة أول مرة عند فتح الصفحة =====
+  render();
+</script>
+
+</body>
+</html>
